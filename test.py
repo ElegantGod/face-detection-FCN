@@ -34,7 +34,6 @@ def generateBoundingBox(featureMap, scale):
     boundingBox = []
     stride = 8
     cellSize = 48
-    #227 x 227 cell, stride=32
     for (x,y), prob in np.ndenumerate(featureMap):
         if(prob >= 0.9):
             boundingBox.append([float(stride * y)/ scale, float(x * stride)/scale, float(stride * y + cellSize - 1)/scale, float(stride * x + cellSize - 1)/scale, prob])
@@ -84,35 +83,35 @@ def nms_average(boxes, overlapThresh=0.2):
         # compute the ratio of overlap
         #overlap = (w * h) / (area[idxs[:last]]  - w * h + area_array)
         
-	overlap = (w * h) / (area[idxs[:last]])
-	delete_idxs = np.concatenate(([last],np.where(overlap > overlapThresh)[0]))
+    overlap = (w * h) / (area[idxs[:last]])
+    delete_idxs = np.concatenate(([last],np.where(overlap > overlapThresh)[0]))
         xmin = 10000
-	ymin = 10000
-	xmax = 0
-	ymax = 0
-	ave_prob  = 0
-	width = x2[i] - x1[i] + 1
-	height = y2[i] - y1[i] + 1
-	for idx in delete_idxs:
-		ave_prob += boxes[idxs[idx]][4]
-		if(boxes[idxs[idx]][0] < xmin):
-			xmin = boxes[idxs[idx]][0]
-		if(boxes[idxs[idx]][1] < ymin):
-			ymin = boxes[idxs[idx]][1]
-		if(boxes[idxs[idx]][2] > xmax):
-			xmax = boxes[idxs[idx]][2]
-		if(boxes[idxs[idx]][3] > ymax):
-			ymax = boxes[idxs[idx]][3]
-	if(x1[i] - xmin >  0.1 * width):
-		xmin = x1[i] - 0.1 * width
-	if(y1[i] - ymin > 0.1 * height):
-		ymin = y1[i] - 0.1 * height
-	if(xmax - x2[i]> 0.1 * width):
-		xmax = x2[i]  + 0.1 * width
-	if( ymax - y2[i] > 0.1 * height):
-		ymax = y2[i] + 0.1 * height
-	result_boxes.append([xmin, ymin, xmax, ymax, ave_prob / len(delete_idxs)])
-	# delete all indexes from the index list that have
+    ymin = 10000
+    xmax = 0
+    ymax = 0
+    ave_prob  = 0
+    width = x2[i] - x1[i] + 1
+    height = y2[i] - y1[i] + 1
+    for idx in delete_idxs:
+        ave_prob += boxes[idxs[idx]][4]
+        if(boxes[idxs[idx]][0] < xmin):
+            xmin = boxes[idxs[idx]][0]
+        if(boxes[idxs[idx]][1] < ymin):
+            ymin = boxes[idxs[idx]][1]
+        if(boxes[idxs[idx]][2] > xmax):
+            xmax = boxes[idxs[idx]][2]
+        if(boxes[idxs[idx]][3] > ymax):
+            ymax = boxes[idxs[idx]][3]
+    if(x1[i] - xmin >  0.1 * width):
+        xmin = x1[i] - 0.1 * width
+    if(y1[i] - ymin > 0.1 * height):
+        ymin = y1[i] - 0.1 * height
+    if(xmax - x2[i]> 0.1 * width):
+        xmax = x2[i]  + 0.1 * width
+    if( ymax - y2[i] > 0.1 * height):
+        ymax = y2[i] + 0.1 * height
+    result_boxes.append([xmin, ymin, xmax, ymax, ave_prob / len(delete_idxs)])
+    # delete all indexes from the index list that have
         idxs = np.delete(idxs, delete_idxs)
 
     # return only the bounding boxes that were picked using the
